@@ -1,9 +1,7 @@
-STUID = 2022262789
-STUNAME = cr
-
 # DO NOT modify the following code!!!
 
-GITFLAGS = -q --author='tracer-ics2023 <tracer@njuics.org>' --no-verify --allow-empty
+GITFLAGS = -q --author='ChenRui0923 <41950730+ChenRui0923@users.noreply.github.com>' --no-verify --allow-empty
+
 
 # prototype: git_commit(msg)
 define git_commit
