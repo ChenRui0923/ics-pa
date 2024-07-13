@@ -71,17 +71,40 @@ static int cmd_info(char *args) {
     if (strcmp(args, "r") == 0) {
       isa_reg_display();
     } else if (strcmp(args, "w" )== 0) {
-      printf("w---this is a test for print monitoring points");
+      printf("w---this is a test for print monitoring points \n");
     } else {
       printf("Invalid argument for info: %s\n", args);
     }
   } else {
-    printf("Please input your arugument for info");
+    printf("Please input your arugument for info \n");
   }
   return 0;
 }
 
 static int cmd_x(char *args) {
+  char* n_str = strtok(args, " ");
+  char* expr_str = strtok(NULL, " ");
+  if (n_str == NULL || expr_str == NULL) {
+    printf("Usage: x N EXPR\n");
+    return 0;
+  }
+  int n = atoi(n_str);
+  if (n <= 0) {
+    printf("Invalid argument for x: %s\n", n_str);
+    return 0;
+  }
+  bool success;
+  vaddr_t addr = expr(expr_str, &success);
+  if(!success) {
+    printf("Invalid argument for x: %s\n", expr_str);
+    return 0;
+  }
+  if (addr) {
+    
+  }
+  // for (int i = 0; i < n_str; i++) {
+  //   printf("0x%08x: 0x%08x\n", addr + i * 4, paddr_read(addr + i * 4, 4));
+  // }
   return 0;
 }
 
