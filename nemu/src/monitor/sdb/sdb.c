@@ -53,6 +53,39 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_si(char *args) {
+  int n = 1;
+  if (args != NULL) {
+    n = atoi(args);
+    if (n <= 0) {
+      printf("Invalid argument for si: %s\n", args);
+      return 0;
+    }
+  }
+  cpu_exec(n);
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  return 0;
+}
+
+static int cmd_x(char *args) {
+  return 0;
+}
+
+static int cmd_p(char *args) {
+  return 0;
+}
+
+static int cmd_w(char *args) {
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -63,6 +96,13 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "si", "Single Step", cmd_si},
+  { "info", "Printing program information", cmd_info},
+  { "x", "Scan Memory ", cmd_x},
+  { "p", "Expression evaluation", cmd_p },
+  { "w", "Set up monitoring points", cmd_w},
+  { "d", "Deleting a Watchpoint", cmd_d },
+
 
   /* TODO: Add more commands */
 
