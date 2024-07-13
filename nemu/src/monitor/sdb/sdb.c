@@ -18,6 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include "memory/vaddr.h"
 
 static int is_batch_mode = false;
 
@@ -117,10 +118,15 @@ static int cmd_x(char *args) {
     printf("Invalid argument for x: %s\n", n_str);
     return 0;
   }
-
   if(!is_hex(expr_str)) {
     printf("Invalid argument for x: %s\n", expr_str);
     return 0;
+  }
+  
+  vaddr_t addr = strtoul(expr_str, NULL, 16);
+
+  for (int i = 0; i < n; i++) {
+    printf("0x%08x: 0x&08x\n", vaddr_read(addr, 4));
   }
 
   return 0;
