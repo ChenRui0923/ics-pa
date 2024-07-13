@@ -21,7 +21,9 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256,
+  TK_EQ,
+  TK_DNUM, 
 
   /* TODO: Add more token types */
 
@@ -39,6 +41,10 @@ static struct rule {
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ},        // equal
+  {"\\*", '*'},         // multiply
+  {"/", '/'},           // devide
+  {"-",'-'},            // minus  
+  {"[0-9]+", TK_DNUM},   // 十进制nums
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -75,7 +81,7 @@ static bool make_token(char *e) {
   int i;
   regmatch_t pmatch;
 
-  nr_token = 0;
+  nr_token = 0; // 已识别的标记数
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
@@ -95,7 +101,35 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+          case '+' : 
+            tokens[nr_token].type = '+';
+            nr_token++;
+            break;
+          case '-' :
+            tokens[nr_token].type = '-';
+            nr_token++;
+            break;
+          case '*' :
+            tokens[nr_token].type = '*';
+            nr_token++;
+            break;
+          case '/' :
+            tokens[nr_token].type = '/';
+            nr_token++;
+            break;
+          case TK_DNUM :
+            tokens[nr_token].type = TK_DNUM;
+            nr_token++;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            break;
+          case TK_EQ :
+            tokens[nr_token].type = TK_EQ;
+            break;
+          case TK_NOTYPE :
+            break;
+          default:
+            printf("Unknown token type: %d\n", rules[i].token_type);
+            return false;
         }
 
         break;
