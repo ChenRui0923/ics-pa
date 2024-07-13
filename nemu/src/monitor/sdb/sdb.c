@@ -75,6 +75,8 @@ static int cmd_info(char *args) {
     } else {
       printf("Invalid argument for info: %s\n", args);
     }
+  } else {
+    printf("Please input your arugument for info");
   }
   return 0;
 }
