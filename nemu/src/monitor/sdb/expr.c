@@ -230,7 +230,7 @@ word_t eval(word_t p, word_t q) {
      * Return the value of the number.
      */
     if (tokens[p].type == TK_DNUM) {
-      printf("num: %s\n", tokens[p].str);
+      printf("Single number: %s\n", tokens[p].str);
       return atoi(tokens[p].str); // 返回数字的值
     } else {
       printf("Unexpected token type\n");
