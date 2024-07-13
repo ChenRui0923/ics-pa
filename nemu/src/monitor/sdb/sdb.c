@@ -148,7 +148,7 @@ static int cmd_p(char *args) {
   } else {
     printf("Failed to evaluate expression: %s\n", args);
   }
-  return 0;
+  return result;
 }
 
 static int cmd_w(char *args) {
