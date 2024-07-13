@@ -262,12 +262,18 @@ word_t eval(word_t p, word_t q) {
   return 0;
 }
 
+void print_tokens() {
+  for (int i = 0; i < nr_token; i++) {
+    printf("Token %d: type = %d, str = %s\n", i, tokens[i].type, tokens[i].str);
+  }
+}
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
-
+  print_tokens();
   /* TODO: Insert codes to evaluate the expression. */
   printf("nr_tk = %d\n", nr_token);
   word_t result = eval(0, nr_token - 1);
