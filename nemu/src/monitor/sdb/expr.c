@@ -131,7 +131,6 @@ static bool make_token(char *e) {
             break;                        
           case TK_DNUM :
             tokens[nr_token].type = TK_DNUM;
-            nr_token++;
             if (substr_len < MAX_STR_LEN) {
               strncpy(tokens[nr_token].str, substr_start, substr_len);
               tokens[nr_token].str[substr_len] = '\0';
@@ -141,6 +140,7 @@ static bool make_token(char *e) {
               printf("Warning: token too long, truncated to %s\n", tokens[nr_token].str);
               return false;
             }
+            nr_token++;
             break;
           case TK_EQ :
             tokens[nr_token].type = TK_EQ;
