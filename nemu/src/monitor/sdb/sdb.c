@@ -81,6 +81,30 @@ static int cmd_info(char *args) {
   return 0;
 }
 
+
+// Check if the string is a hex num
+bool is_hex(const char *str) {
+  if (str == NULL) {
+    return false;
+  }
+
+  // Check if the string starts with "0x" or "0X"
+  if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
+    str += 2; // Skip the "0x" prefix
+
+    // Check if the rest of the string contains only valid hex characters
+    while (*str) {
+      if (!isxdigit(*str)) {
+        return false;
+      }
+      str++;
+    }
+    return true;
+  }
+  return false;
+}
+
+
 static int cmd_x(char *args) {
   char* n_str = strtok(args, " ");
   char* expr_str = strtok(NULL, " ");
@@ -93,18 +117,12 @@ static int cmd_x(char *args) {
     printf("Invalid argument for x: %s\n", n_str);
     return 0;
   }
-  bool success;
-  vaddr_t addr = expr(expr_str, &success);
-  if(!success) {
+
+  if(!is_hex(expr_str)) {
     printf("Invalid argument for x: %s\n", expr_str);
     return 0;
   }
-  if (addr) {
-    
-  }
-  // for (int i = 0; i < n_str; i++) {
-  //   printf("0x%08x: 0x%08x\n", addr + i * 4, paddr_read(addr + i * 4, 4));
-  // }
+
   return 0;
 }
 
