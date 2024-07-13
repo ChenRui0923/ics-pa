@@ -67,6 +67,15 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
+   if (args != NULL) {
+    if (strcmp(args, "r") == 0) {
+      isa_reg_display();
+    } else if (strcmp(args, "w" )== 0) {
+      printf("w---this is a test for print monitoring points");
+    } else {
+      printf("Invalid argument for info: %s\n", args);
+    }
+  }
   return 0;
 }
 
