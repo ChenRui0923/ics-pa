@@ -144,7 +144,7 @@ static int cmd_p(char *args) {
   bool flag = true;
   word_t result = expr(args, &flag);
   if (flag) {
-    printf("%u\n", result);
+    printf("%u\n", (uint32_t)result);
   } else {
     printf("Failed to evaluate expression: %s\n", args);
   }
