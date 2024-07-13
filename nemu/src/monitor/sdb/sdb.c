@@ -124,9 +124,9 @@ static int cmd_x(char *args) {
   }
   
   vaddr_t addr = strtoul(expr_str, NULL, 16);
-  vaddr_t min = strtoul("0x80000000", NULL, 16);
-  vaddr_t max = strtoul("0x87ffffff", NULL, 16);
-  if (addr < min || addr >= max) {
+  // vaddr_t min = strtoul("0x80000000", NULL, 16);
+  // vaddr_t max = strtoul("0x87ffffff", NULL, 16);
+  if (addr < 0x80000000 || addr + n * 4 > 0x88000000) {
     printf("Invalid address. Please input adress in bound of pmem [0x80000000, 0x87ffffff] \n");
     return 0;
   }
