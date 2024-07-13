@@ -137,6 +137,17 @@ static int cmd_x(char *args) {
 }
 
 static int cmd_p(char *args) {
+  if (args == NULL) {
+    printf("Usage: p EXPR\n");
+    return 0;
+  }
+  bool flag = true;
+  word_t result = expr(args, &flag);
+  if (flag) {
+    printf("%u\n", result);
+  } else {
+    printf("Failed to evaluate expression: %s\n", args);
+  }
   return 0;
 }
 
