@@ -20,6 +20,8 @@
  */
 #include <regex.h>
 
+#define MAX_STR_LEN 32  // 定义缓冲区的最大长度
+
 enum {
   TK_NOTYPE = 256,
   TK_EQ,
@@ -70,7 +72,7 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  char str[32];
+  char str[MAX_STR_LEN];
 } Token;
 
 static Token tokens[32] __attribute__((used)) = {};
@@ -120,7 +122,15 @@ static bool make_token(char *e) {
           case TK_DNUM :
             tokens[nr_token].type = TK_DNUM;
             nr_token++;
-            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            if (substr_len < MAX_STR_LEN) {
+              strncpy(tokens[nr_token].str, substr_start, substr_len);
+            } else {
+              strncpy(tokens[nr_token].str, substr_start, MAX_STR_LEN - 1);
+              tokens[nr_token].str[MAX_STR_LEN - 1] = '\0';
+              printf("Warning: token too long, truncated to %s\n", tokens[nr_token].str);
+              return false;
+            }
+            
             break;
           case TK_EQ :
             tokens[nr_token].type = TK_EQ;
@@ -153,7 +163,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  // TODO();
+  TODO();
 
   return 0;
 }
