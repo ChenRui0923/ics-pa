@@ -230,7 +230,7 @@ word_t eval(word_t p, word_t q) {
      * Return the value of the number.
      */
     if (tokens[p].type == TK_DNUM) {
-      printf("Single number: %s\n", tokens[p].str);
+      // printf("Single number: %s\n", tokens[p].str);
       return atoi(tokens[p].str); // 返回数字的值
     } else {
       printf("Unexpected token type\n");
@@ -245,10 +245,10 @@ word_t eval(word_t p, word_t q) {
   }
   else {
     int op = find_main_operator(p, q);
-    printf("Main operator: %d (%c) at %d\n", tokens[op].type, tokens[op].type, op);
+    // printf("Main operator: %d (%c) at %d\n", tokens[op].type, tokens[op].type, op);
     word_t val1 = eval(p, op - 1);
     word_t val2 = eval(op + 1, q);
-    printf("val1: %u, val2: %u, op: %c\n", val1, val2, tokens[op].type); // 添加打印
+    // printf("val1: %u, val2: %u, op: %c\n", val1, val2, tokens[op].type); // 添加打印
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
@@ -262,20 +262,14 @@ word_t eval(word_t p, word_t q) {
   return 0;
 }
 
-void print_tokens() {
-  for (int i = 0; i < nr_token; i++) {
-    printf("Token %d: type = %d, str = %s\n", i, tokens[i].type, tokens[i].str);
-  }
-}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
-  print_tokens();
   /* TODO: Insert codes to evaluate the expression. */
-  printf("nr_tk = %d\n", nr_token);
+  // printf("nr_tk = %d\n", nr_token);
   word_t result = eval(0, nr_token - 1);
   *success = true;
   return result;
