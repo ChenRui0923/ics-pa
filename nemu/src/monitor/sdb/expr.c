@@ -46,7 +46,9 @@ static struct rule {
   {"\\*", '*'},         // multiply
   {"/", '/'},           // devide
   {"-",'-'},            // minus  
-  {"[0-9]+", TK_DNUM},   // 十进制nums
+  {"[0-9]+", TK_DNUM},  // 十进制nums
+  {"\\(", '('},         // Left parenthesis
+  {"\\)", ')'},         // Right parenthesis
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -119,18 +121,26 @@ static bool make_token(char *e) {
             tokens[nr_token].type = '/';
             nr_token++;
             break;
+          case '(' :
+            tokens[nr_token].type = '(';
+            nr_token++;
+            break;
+          case ')' :
+            tokens[nr_token].type = ')';
+            nr_token++;
+            break;                        
           case TK_DNUM :
             tokens[nr_token].type = TK_DNUM;
             nr_token++;
             if (substr_len < MAX_STR_LEN) {
               strncpy(tokens[nr_token].str, substr_start, substr_len);
+              tokens[nr_token].str[substr_len] = '\0';
             } else {
               strncpy(tokens[nr_token].str, substr_start, MAX_STR_LEN - 1);
               tokens[nr_token].str[MAX_STR_LEN - 1] = '\0';
               printf("Warning: token too long, truncated to %s\n", tokens[nr_token].str);
               return false;
             }
-            
             break;
           case TK_EQ :
             tokens[nr_token].type = TK_EQ;
