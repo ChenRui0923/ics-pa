@@ -244,6 +244,7 @@ word_t eval(word_t p, word_t q) {
   }
   else {
     int op = find_main_operator(p, q);
+    printf("Main operator: %d (%c) at %d\n", tokens[op].type, tokens[op].type, op);
     word_t val1 = eval(p, op - 1);
     word_t val2 = eval(op + 1, q);
 
