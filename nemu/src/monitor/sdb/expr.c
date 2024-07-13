@@ -165,6 +165,99 @@ static bool make_token(char *e) {
   return true;
 }
 
+int get_priority(int type) {
+  switch (type) {
+    case '+':
+    case '-':
+      return 1; // 加法和减法的优先级为1
+    case '*':
+    case '/':
+      return 2; // 乘法和除法的优先级为2
+    // 根据需要添加其他运算符及其优先级
+    default:
+      return 10; // 默认优先级设为一个较大的值
+  }
+}
+
+
+
+int find_main_operator(int p, int q) {
+  int level = 0;
+  int op = -1; // 主运算符的位置
+  int min_priority = 10; // 初始化为一个较大的值
+
+  for (int i = p; i <= q; i++) {
+    int type = tokens[i].type;
+    if (type == '(') {
+      level++; // 遇到左括号，增加括号层次
+    } else if (type == ')') {
+      level--; // 遇到右括号，减少括号层次
+    } else if (level == 0) { // 仅在括号外的运算符有效
+      int priority = get_priority(type);
+      if (priority <= min_priority) {
+        min_priority = priority;
+        op = i;
+      }
+    }
+  }
+
+  return op;
+}
+
+
+
+bool check_parentheses(int p, int q) {
+  if (tokens[p].type != '(' || tokens[q].type != ')') {
+    return false;
+  }
+  int level = 0;
+  for (int i = p; i <= q; i++) {
+    if (tokens[i].type == '(') level++;
+    if (tokens[i].type == ')') level--;
+    if (level == 0 && i < q) return false;
+  }
+  return level == 0;
+}
+
+word_t eval(word_t p, word_t q) {
+  if (p > q) {
+    printf("Bad expression\n");
+    assert(0);
+  }
+  else if (p == q) {
+    /* Single token.
+     * For now this token should be a number.
+     * Return the value of the number.
+     */
+    if (tokens[p].type == TK_DNUM) {
+      return atoi(tokens[p].str); // 返回数字的值
+    } else {
+      printf("Unexpected token type\n");
+      assert(0);
+    }
+  }
+  else if (check_parentheses(p, q) == true) {
+    /* The expression is surrounded by a matched pair of parentheses.
+     * If that is the case, just throw away the parentheses.
+     */
+    return eval(p + 1, q - 1);
+  }
+  else {
+    int op = find_main_operator(p, q);
+    word_t val1 = eval(p, op - 1);
+    word_t val2 = eval(op + 1, q);
+
+    switch (tokens[op].type) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 * val2;
+      case '/': return val1 / val2;
+      default: 
+        printf("Unexpected operator\n");
+        assert(0);
+    }
+  }  
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -173,7 +266,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  // TODO();
+  eval(0, nr_token);
 
   return 0;
 }
