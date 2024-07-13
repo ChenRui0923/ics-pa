@@ -126,7 +126,7 @@ static int cmd_x(char *args) {
   vaddr_t addr = strtoul(expr_str, NULL, 16);
 
   for (int i = 0; i < n; i++) {
-    printf("0x%08x: 0x&08x\n", vaddr_read(addr, 4));
+    printf("0x%08x\n", vaddr_read(addr, 4));
   }
 
   return 0;
