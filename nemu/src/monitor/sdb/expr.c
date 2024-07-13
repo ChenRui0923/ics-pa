@@ -247,7 +247,7 @@ word_t eval(word_t p, word_t q) {
     printf("Main operator: %d (%c) at %d\n", tokens[op].type, tokens[op].type, op);
     word_t val1 = eval(p, op - 1);
     word_t val2 = eval(op + 1, q);
-
+    printf("val1: %u, val2: %u, op: %c\n", val1, val2, tokens[op].type); // 添加打印
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
