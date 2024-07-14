@@ -30,7 +30,7 @@ void run_tests(const char *filename) {
     return;
   }
 
-  char line[1024];
+  char line[2048];
   while (fgets(line, sizeof(line), fp)) {
     // 去除换行符和回车符
     line[strcspn(line, "\n")] = '\0';
