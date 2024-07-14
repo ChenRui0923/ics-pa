@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
-  const char *input_file = "../tools/gen-expr/build/input";
+  const char *input_file = "/home/gpu04/ray_os/pa/ics2023/nemu/tools/gen-expr/build/input";
   printf("Reading from input file: %s\n", input_file);
   run_tests(input_file);
 
