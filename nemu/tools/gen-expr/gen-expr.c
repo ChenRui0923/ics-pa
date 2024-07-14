@@ -31,9 +31,82 @@ static char *code_format =
 "  return 0; "
 "}";
 
-static void gen_rand_expr() {
-  buf[0] = '\0';
+int buf_index = 0;
+
+int choose(int n){
+  int val = rand() % n;
+  return val;
 }
+
+
+void gen_num(){
+  int num = rand() % 9 + 1;
+  char c = (char)(num + '0');
+  buf[buf_index] = c;
+  buf_index++;
+}
+
+void gen(char c){
+  buf[buf_index] = c;
+  buf_index++;
+}
+
+void gen_rand_op(){
+  switch (choose(4)){
+    case 0:
+    gen('+');
+    break;
+
+    case 1:
+    gen('-');
+    break;
+
+    case 2:
+    gen('*');
+    break;
+
+    case 3:
+    gen('/');
+    break;
+
+  }
+}
+
+static void gen_rand_expr() {
+  if(buf_index > 65530)
+    printf("over size!");
+  //buf[0] = '\0';
+  switch (choose(3)) {
+    case 0:
+    if(buf[buf_index] != ')'){
+      gen_num();
+    }
+    else{
+      gen_rand_expr();
+    }
+      break;
+    case 1:
+    if(buf[0]!='\0' && (buf[buf_index] == '+' || buf[buf_index] == '-' ||
+    buf[buf_index] == '*' || buf[buf_index] == '/')){
+      gen('(');
+      gen_rand_expr();
+      gen(')');
+    }
+    else {
+      gen_rand_expr();
+    }
+      break;
+    default:
+      gen_rand_expr();
+      gen_rand_op();
+      gen_rand_expr();
+      break;
+  }
+
+}
+
+
+
 
 int main(int argc, char *argv[]) {
   int seed = time(0);
@@ -44,6 +117,7 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
+    buf_index = 0;
     gen_rand_expr();
 
     sprintf(code_buf, code_format, buf);

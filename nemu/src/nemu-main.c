@@ -20,6 +20,38 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
+word_t expr(char *e, bool *success);
+
+void run_tests(const char *filename) {
+  FILE *fp = fopen(filename, "r");
+  if (!fp) {
+    perror("fopen");
+    return;
+  }
+
+  char line[1024];
+  while (fgets(line, sizeof(line), fp)) {
+    char *expr_str = strchr(line, ' ');
+    if (!expr_str) continue;
+
+    *expr_str = '\0';  // Split the line into result and expression
+    expr_str++;
+
+    int expected_result = atoi(line);
+    bool success = true;
+    word_t result = expr(expr_str, &success);
+
+    if (success && result == expected_result) {
+      printf("PASS: %s = %u\n", expr_str, result);
+    } else {
+      printf("FAIL: %s = %u (expected %u)\n", expr_str, result, expected_result);
+    }
+  }
+
+  fclose(fp);
+}
+
+
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
@@ -27,6 +59,8 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
+
+  run_tests("nemu/tools/gen-expr/build/input");
 
   /* Start engine. */
   engine_start();
