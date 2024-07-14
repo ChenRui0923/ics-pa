@@ -26,11 +26,16 @@ void run_tests(const char *filename) {
   FILE *fp = fopen(filename, "r");
   if (!fp) {
     perror("fopen");
+    printf("Attempted to open file: %s\n", filename);
     return;
   }
 
   char line[1024];
   while (fgets(line, sizeof(line), fp)) {
+    // 去除换行符和回车符
+    line[strcspn(line, "\n")] = '\0';
+    line[strcspn(line, "\r")] = '\0';
+
     char *expr_str = strchr(line, ' ');
     if (!expr_str) continue;
 
@@ -41,10 +46,15 @@ void run_tests(const char *filename) {
     bool success = true;
     word_t result = expr(expr_str, &success);
 
-    if (success && result == expected_result) {
-      printf("PASS: %s = %u\n", expr_str, result);
+    printf("Evaluating: %s\n", expr_str);
+    if (success) {
+      if (result == expected_result) {
+        printf("PASS: %s = %u\n", expr_str, result);
+      } else {
+        printf("FAIL: %s = %u (expected %u)\n", expr_str, result, expected_result);
+      }
     } else {
-      printf("FAIL: %s = %u (expected %u)\n", expr_str, result, expected_result);
+      printf("ERROR: Failed to evaluate expression: %s\n", expr_str);
     }
   }
 
