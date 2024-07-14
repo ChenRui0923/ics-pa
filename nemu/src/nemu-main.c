@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
-  run_tests("/home/gpu04/ray_os/pa/ics2023/nemu/tools/gen-expr/build/input");
+  run_tests("../tools/gen-expr/build/input");
 
   /* Start engine. */
   engine_start();
