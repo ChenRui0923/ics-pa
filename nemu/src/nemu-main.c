@@ -49,7 +49,7 @@ void run_tests(const char *filename) {
     // printf("Evaluating: %s\n", expr_str);
     if (success) {
       if (result == expected_result) {
-        // printf("PASS: %s = %u\n", expr_str, result);
+        printf("PASS: %s = %u\n", expr_str, result);
       } else {
         printf("FAIL: %s = %u (expected %u)\n", expr_str, result, expected_result);
       }
