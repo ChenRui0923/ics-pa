@@ -94,8 +94,8 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+        //     i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
@@ -245,7 +245,7 @@ int eval(word_t p, word_t q) {
   }
   else {
     int op = find_main_operator(p, q);
-    printf("Main operator: %d (%c) at %d\n", tokens[op].type, tokens[op].type, op);
+    // printf("Main operator: %d (%c) at %d\n", tokens[op].type, tokens[op].type, op);
     int val1 = eval(p, op - 1);
     int val2 = eval(op + 1, q);
     // printf("val1: %u, val2: %u, op: %c\n", val1, val2, tokens[op].type); // 添加打印
