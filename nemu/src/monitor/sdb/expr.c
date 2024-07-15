@@ -219,7 +219,7 @@ bool check_parentheses(int p, int q) {
   return level == 0;
 }
 
-word_t eval(word_t p, word_t q) {
+int eval(word_t p, word_t q) {
   if (p > q) {
     printf("Bad expression\n");
     assert(0);
@@ -246,8 +246,8 @@ word_t eval(word_t p, word_t q) {
   else {
     int op = find_main_operator(p, q);
     printf("Main operator: %d (%c) at %d\n", tokens[op].type, tokens[op].type, op);
-    word_t val1 = eval(p, op - 1);
-    word_t val2 = eval(op + 1, q);
+    int val1 = eval(p, op - 1);
+    int val2 = eval(op + 1, q);
     // printf("val1: %u, val2: %u, op: %c\n", val1, val2, tokens[op].type); // 添加打印
     switch (tokens[op].type) {
       case '+': return val1 + val2;
@@ -270,7 +270,7 @@ word_t expr(char *e, bool *success) {
   }
   /* TODO: Insert codes to evaluate the expression. */
   // printf("nr_tk = %d\n", nr_token);
-  word_t result = eval(0, nr_token - 1);
+  word_t result = (word_t)eval(0, nr_token - 1);
   *success = true;
   return result;
 }
