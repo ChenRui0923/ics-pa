@@ -50,7 +50,7 @@ void run_tests(const char *filename) {
     if (success) {
       if (result == expected_result) {
         // Green text for PASS
-        printf("\033[0;32mPASS: %s = %u\033[0m\n", expr_str, result);
+        printf("\033[0;32mPASS:\033[0m %s = %u\n", expr_str, result);
       } else {
         // Red text for FAIL
         printf("\033[0;31mFAIL:\033[0m %s = %u (expected %u)\n", expr_str, result, expected_result);
