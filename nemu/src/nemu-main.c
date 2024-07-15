@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 
   const char *input_file = "/home/gpu04/ray_os/pa/ics2023/nemu/tools/gen-expr/input";
   printf("Reading from input file: %s\n", input_file);
-  run_tests(input_file); // 导入input_file来进行表达式运算测试
+  // run_tests(input_file); // 导入input_file来进行表达式运算测试
 
   /* Start engine. */
   engine_start();
