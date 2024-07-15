@@ -49,9 +49,11 @@ void run_tests(const char *filename) {
     // printf("Evaluating: %s\n", expr_str);
     if (success) {
       if (result == expected_result) {
-        printf("PASS: %s = %u\n", expr_str, result);
+        // Green text for PASS
+        printf("\033[0;32mPASS: %s = %u\033[0m\n", expr_str, result);
       } else {
-        printf("FAIL: %s = %u (expected %u)\n", expr_str, result, expected_result);
+        // Red text for FAIL
+        printf("\033[0;31mFAIL: %s = %u (expected %u)\033[0m\n", expr_str, result, expected_result);
       }
     } else {
       printf("ERROR: Failed to evaluate expression: %s\n", expr_str);
