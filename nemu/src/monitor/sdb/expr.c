@@ -184,7 +184,7 @@ int get_priority(int type) {
 int find_main_operator(int p, int q) {
   int level = 0;
   int op = -1; // 主运算符的位置
-  int min_priority = 10; // 初始化为一个较大的值
+  int min_priority = 20; // 初始化为一个较大的值
 
   for (int i = p; i <= q; i++) {
     int type = tokens[i].type;
