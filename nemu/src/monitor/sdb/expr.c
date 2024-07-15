@@ -300,7 +300,7 @@ word_t expr(char *e, bool *success) {
       tokens[i].type = DEREF;
     } 
     else if(tokens[i].type == '-') {
-      if (i == 0 && (i > 0 && tokens[i - 1].type == '(')) {
+      if (i == 0 || ( i > 0 && (tokens[i - 1].type == '(' || tokens[i - 1].type == '-' || tokens[i - 1].type == '+' ) ) ) {
         tokens[i].type = TK_UNARY_MINUS;
       } else if((i > 0 && tokens[i - 1].type == TK_DNUM)) {
         tokens[i].type = TK_MINUS;
