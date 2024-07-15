@@ -26,7 +26,14 @@ enum {
   TK_NOTYPE = 256,
   TK_EQ,
   TK_DNUM, 
-
+  TK_UEQ,
+  TK_AND,
+  TK_NEQ,
+  TK_HEXNUM,
+  TK_DOLLAR,
+  TK_MINUS,  // ‘-’ 作为减法
+  TK_UNARY_MINUS, // ‘-’ 作为取反 
+  DEREF,
   /* TODO: Add more token types */
 
 };
@@ -49,6 +56,10 @@ static struct rule {
   {"[0-9]+", TK_DNUM},  // 十进制nums
   {"\\(", '('},         // Left parenthesis
   {"\\)", ')'},         // Right parenthesis
+  {"&&", TK_AND},       // logical AND
+  {"!=", TK_NEQ},       // not equal
+  {"0x[0-9a-fA-F]+", TK_HEXNUM}, // hexadecimal numbers starting with "0x"
+  {"$", TK_DOLLAR},     // special token starting with "&"
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -219,7 +230,7 @@ bool check_parentheses(int p, int q) {
   return level == 0;
 }
 
-int eval(word_t p, word_t q) {
+int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运算中途递归调用时因为有负值存在而导致与c直接计算的答案不符
   if (p > q) {
     printf("Bad expression\n");
     assert(0);
@@ -230,8 +241,12 @@ int eval(word_t p, word_t q) {
      * Return the value of the number.
      */
     if (tokens[p].type == TK_DNUM) {
-      // printf("Single number: %s\n", tokens[p].str);
-      return atoi(tokens[p].str); // 返回数字的值
+      int val = atoi(tokens[p].str);
+      // Check for preceding unary minus
+      if (p > 0 && tokens[p - 1].type == TK_UNARY_MINUS) {
+          val = -val;
+      }
+      return val;
     } else {
       printf("Unexpected token type\n");
       assert(0);
@@ -245,13 +260,21 @@ int eval(word_t p, word_t q) {
   }
   else {
     int op = find_main_operator(p, q);
-    // printf("Main operator: %d (%c) at %d\n", tokens[op].type, tokens[op].type, op);
+
+    // Apply unary minus before evaluating binary operations
+    while (op > p && tokens[op - 1].type == TK_UNARY_MINUS) {
+      int val = eval(p, op - 2);
+      // Apply unary minus to the evaluated value
+      val = -val;
+      p = op - 1; // Update start position for next evaluation
+      op = find_main_operator(p, q);
+    }
+
     int val1 = eval(p, op - 1);
     int val2 = eval(op + 1, q);
-    // printf("val1: %u, val2: %u, op: %c\n", val1, val2, tokens[op].type); // 添加打印
     switch (tokens[op].type) {
       case '+': return val1 + val2;
-      case '-': return val1 - val2;
+      case TK_MINUS : return val1 - val2;
       case '*': return val1 * val2;
       case '/': return val1 / val2;
       default: 
@@ -268,8 +291,23 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
+
+  
   /* TODO: Insert codes to evaluate the expression. */
-  // printf("nr_tk = %d\n", nr_token);
+
+  for (int i = 0; i < nr_token; i ++) {
+    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '-') ) {   //这里type先乱写的
+      tokens[i].type = DEREF;
+    } 
+    else if(tokens[i].type == '-') {
+      if (i == 0 && (i > 0 && tokens[i - 1].type == '(')) {
+        tokens[i].type = TK_UNARY_MINUS;
+      } else if((i > 0 && tokens[i - 1].type == TK_DNUM)) {
+        tokens[i].type = TK_MINUS;
+      }
+    }
+  }
+
   word_t result = (word_t)eval(0, nr_token - 1);
   *success = true;
   return result;
