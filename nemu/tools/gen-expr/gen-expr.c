@@ -62,7 +62,17 @@ static void gen_rand_expr() {
     default:{
       gen_rand_expr();
       strcat(buf,op_);
-      gen_rand_expr();
+      if (op_[0] == '/') {
+        // Ensure the divisor is not zero
+        int divisor;
+        do {
+            divisor = rand() % MAX;
+        } while (divisor == 0);
+        sprintf(expr_, "%d", divisor);
+        strcat(buf, expr_);
+      } else {
+          gen_rand_expr();
+      }
       break;
     }
   }
