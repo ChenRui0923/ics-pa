@@ -175,7 +175,7 @@ int get_priority(int type) {
       return 2; // 乘法和除法的优先级为2
     // 根据需要添加其他运算符及其优先级
     default:
-      return 10; // 默认优先级设为一个较大的值
+      return 20; // 默认优先级设为一个较大的值
   }
 }
 
