@@ -1,23 +1,4 @@
-/***************************************************************************************
-* Copyright (c) 2014-2022 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
-
 #include <isa.h>
-
-/* We use the POSIX regex functions to process regular expressions.
- * Type 'man regex' for more information about POSIX regex functions.
- */
 #include <regex.h>
 
 #define MAX_STR_LEN 32  // 定义缓冲区的最大长度
@@ -26,6 +7,7 @@ enum {
   TK_NOTYPE = 256,
   TK_EQ,
   TK_DNUM, 
+  TK_UEQ,
   TK_AND,
   TK_NEQ,
   TK_HEXNUM,
@@ -33,25 +15,19 @@ enum {
   TK_UNARY_MINUS, // ‘-’ 作为取反 
   DEREF,
   /* TODO: Add more token types */
-
 };
 
 static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-
-  /* TODO: Add more rules.
-   * Pay attention to the precedence level of different rules.
-   */
-
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ},        // equal
   {"\\*", '*'},         // multiply
-  {"/", '/'},           // devide
-  {"-",'-'},            // minus  
-  {"[0-9]+", TK_DNUM},  // 十进制nums
+  {"/", '/'},           // divide
+  {"-", '-'},           // minus  
+  {"[0-9]+", TK_DNUM},  // 十进制 nums
   {"\\(", '('},         // Left parenthesis
   {"\\)", ')'},         // Right parenthesis
   {"&&", TK_AND},       // logical AND
@@ -72,7 +48,7 @@ void init_regex() {
   char error_msg[128];
   int ret;
 
-  for (i = 0; i < NR_REGEX; i ++) {
+  for (i = 0; i < NR_REGEX; i++) {
     ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
     if (ret != 0) {
       regerror(ret, &re[i], error_msg, 128);
@@ -87,7 +63,7 @@ typedef struct token {
 } Token;
 
 static Token tokens[1024] __attribute__((used)) = {};
-static int nr_token __attribute__((used))  = 0;
+static int nr_token __attribute__((used)) = 0;
 
 static bool make_token(char *e) {
   int position = 0;
@@ -98,7 +74,7 @@ static bool make_token(char *e) {
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
-    for (i = 0; i < NR_REGEX; i ++) {
+    for (i = 0; i < NR_REGEX; i++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
@@ -114,31 +90,31 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          case '+' : 
+          case '+': 
             tokens[nr_token].type = '+';
             nr_token++;
             break;
-          case '-' :
+          case '-': 
             tokens[nr_token].type = '-';
             nr_token++;
             break;
-          case '*' :
+          case '*': 
             tokens[nr_token].type = '*';
             nr_token++;
             break;
-          case '/' :
+          case '/': 
             tokens[nr_token].type = '/';
             nr_token++;
             break;
-          case '(' :
+          case '(': 
             tokens[nr_token].type = '(';
             nr_token++;
             break;
-          case ')' :
+          case ')': 
             tokens[nr_token].type = ')';
             nr_token++;
-            break;                        
-          case TK_DNUM :
+            break;
+          case TK_DNUM: 
             tokens[nr_token].type = TK_DNUM;
             if (substr_len < MAX_STR_LEN) {
               strncpy(tokens[nr_token].str, substr_start, substr_len);
@@ -151,10 +127,10 @@ static bool make_token(char *e) {
             }
             nr_token++;
             break;
-          case TK_EQ :
+          case TK_EQ: 
             tokens[nr_token].type = TK_EQ;
             break;
-          case TK_NOTYPE :
+          case TK_NOTYPE: 
             break;
           default:
             printf("Unknown token type: %d\n", rules[i].token_type);
@@ -188,8 +164,6 @@ int get_priority(int type) {
   }
 }
 
-
-
 int find_main_operator(int p, int q) {
   int level = 0;
   int op = -1; // 主运算符的位置
@@ -213,8 +187,6 @@ int find_main_operator(int p, int q) {
   return op;
 }
 
-
-
 bool check_parentheses(int p, int q) {
   if (tokens[p].type != '(' || tokens[q].type != ')') {
     return false;
@@ -228,8 +200,7 @@ bool check_parentheses(int p, int q) {
   return level == 0;
 }
 
-int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运算中途递归调用时因为有负值存在而导致与c直接计算的答案不符
-  printf("p= %u, q= %u \n", p, q);
+int eval(int p, int q) {
   if (p > q) {
     printf("Bad expression\n");
     assert(0);
@@ -240,17 +211,12 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
      * Return the value of the number.
      */
     if (tokens[p].type == TK_DNUM) {
-      int val = atoi(tokens[p].str);
-      // Check for preceding unary minus
-      if (p > 0 && tokens[p - 1].type == TK_UNARY_MINUS) {
-          val = -val;
-      }
-      return val;
-    } else if( tokens[p].type == TK_UNARY_MINUS && tokens[p + 1].type == TK_DNUM) {
-      return 0;
+      return atoi(tokens[p].str);
+    } else if (tokens[p].type == TK_UNARY_MINUS) {
+      return -atoi(tokens[p + 1].str);
     } else {
       printf("Unexpected token type\n");
-      // assert(0);
+      assert(0);
     }
   }
   else if (check_parentheses(p, q) == true) {
@@ -261,6 +227,11 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
   }
   else {
     int op = find_main_operator(p, q);
+
+    if (op == -1) {
+      printf("No operator found\n");
+      assert(0);
+    }
 
     int val1 = 0;
     if (tokens[op].type == TK_UNARY_MINUS) {
@@ -279,10 +250,9 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
           assert(0);
       }
     }
-  }  
+  }
   return 0;
 }
-
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -290,21 +260,17 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  
-  /* TODO: Insert codes to evaluate the expression. */
-
-  for (int i = 0; i < nr_token; i ++) {
-    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '(' || tokens[i - 1].type == TK_EQ )) {   //这里type先乱写的
+  for (int i = 0; i < nr_token; i++) {
+    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '(' || tokens[i - 1].type == TK_EQ)) {
       tokens[i].type = DEREF;
-    } 
-    else if(tokens[i].type == '-') {
-      if (i == 0 || tokens[i - 1].type == '(' || tokens[i - 1].type == '-' || tokens[i - 1].type == '+' ) {
+    } else if (tokens[i].type == '-') {
+      if (i == 0 || tokens[i - 1].type == '(' || tokens[i - 1].type == '+' || tokens[i - 1].type == '-' || tokens[i - 1].type == '*') {
         tokens[i].type = TK_UNARY_MINUS;
       }
     }
   }
 
-  word_t result = (word_t)eval(0, nr_token - 1);
+  word_t result = eval(0, nr_token - 1);
   *success = true;
   return result;
 }
