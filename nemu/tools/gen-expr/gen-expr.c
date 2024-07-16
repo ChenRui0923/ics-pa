@@ -30,52 +30,9 @@ static char *code_format =
 "  printf(\"%%u\", result); "
 "  return 0; "
 "}";
-uint32_t rand_expr[10]={0,0,0,0,1,1,1,2,2,2};
-uint32_t rand_op;
-char expr_[100];
-char op_[2];
-
-#define MAX 1000
 
 static void gen_rand_expr() {
-  rand_op =rand()%4;
-  
-  switch(rand_op){
-    case 0:op_[0]='+';op_[1]='\0';break;
-    case 1:op_[0]='-';op_[1]='\0';break;
-    case 2:op_[0]='*';op_[1]='\0';break;
-    default:op_[0]='/';op_[1]='\0';break;
-  }
-
-  switch(rand_expr[rand()%10]){
-    case 0:{
-      sprintf(expr_,"%d",rand()%MAX);
-      strcat(buf,expr_);
-      break;
-    }
-    case 1:{
-      strcat(buf,"(");
-      gen_rand_expr();
-      strcat(buf,")");
-      break;
-    }
-    default:{
-      gen_rand_expr();
-      strcat(buf,op_);
-      if (op_[0] == '/') {
-        // Ensure the divisor is not zero
-        int divisor;
-        do {
-            divisor = rand() % MAX;
-        } while (divisor == 0);
-        sprintf(expr_, "%d", divisor);
-        strcat(buf, expr_);
-      } else {
-          gen_rand_expr();
-      }
-      break;
-    }
-  }
+  buf[0] = '\0';
 }
 
 int main(int argc, char *argv[]) {
@@ -87,7 +44,6 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
-    strcpy(buf," ");
     gen_rand_expr();
 
     sprintf(code_buf, code_format, buf);

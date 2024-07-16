@@ -15,12 +15,10 @@
 
 #include "sdb.h"
 
-#ifdef CONFIG_WATCHPOINT
-
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
-void init_wp_pool(void) {
+void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i++) {
     wp_pool[i] = (WP){
@@ -33,7 +31,7 @@ void init_wp_pool(void) {
   free_ = wp_pool;
 }
 
-static WP *new_wp(void) {
+static WP *new_wp() {
   if (free_ == NULL) {
     return NULL;
   }
@@ -45,7 +43,7 @@ static WP *new_wp(void) {
 }
 
 static void free_wp(WP *wp) {
-  assert(((void)"wp is not null", likely(wp != NULL)));
+  Assert(wp != NULL, "wp is not null");
 
   if (head == wp) {
     head = head->next;
@@ -58,7 +56,7 @@ static void free_wp(WP *wp) {
       break;
     }
   }
-  assert(((void)"double free detected", likely(p != NULL)));
+  Assert(p != NULL, "double free detected");
   p->next = wp->next;
   if (free_ == NULL) {
     free_ = wp;
@@ -80,13 +78,9 @@ static WP *watchpoint_find(int no) {
   return NULL;
 }
 
-static void watchpoint_print_banner(void) {
-  puts("Num\tExpr");
-}
+static void watchpoint_print_banner(void) { puts("Num\tExpr"); }
 
-WP *watchpoint_head(void) {
-  return head;
-}
+WP *watchpoint_head(void) { return head; }
 
 void watchpoint_print_all(void) {
   watchpoint_print_banner();
@@ -131,5 +125,3 @@ void watchpoint_delete(int no) {
   }
   free_wp(p);
 }
-
-#endif
