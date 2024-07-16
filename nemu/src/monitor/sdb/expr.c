@@ -179,7 +179,7 @@ static bool make_token(char *e) {
 int get_priority(int type) {
   switch (type) {
     case '+':
-    case '-':
+    case TK_MINUS:
       return 1; // 加法和减法的优先级为1
     case '*':
     case '/':
