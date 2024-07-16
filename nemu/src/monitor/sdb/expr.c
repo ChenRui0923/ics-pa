@@ -31,6 +31,7 @@ enum {
   TK_DEREF,
   TK_REG,
   TK_AND,
+  // TK_SPCREG,
 };
 
 enum {
@@ -57,7 +58,7 @@ static struct rule {
     {"&&", TK_AND},           // logical and
     {"0x[0-9]+", TK_NUM},     // hex number
     {"[0-9]+", TK_NUM},       // dec number
-    {"\\$[a-z0-9]+", TK_REG}, // register
+    {"\\$[\\$a-z0-9]+", TK_REG}, // register
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -157,6 +158,10 @@ static bool make_token(char *e) {
           tokens[i].type = TK_NEG;
         }
         break;
+      // case '$':
+      //   if(tokens[i - 1].type == TK_REG && tokens[i + 1].type == TK_NUM) {
+      //     tokens[i].type = TK_SPCREG;
+      //   }
       default:
         break;
     }
