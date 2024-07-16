@@ -17,13 +17,9 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include "../monitor/sdb/watchpoint.h"
 
-typedef struct watchpoint {} WP;
-WP* new_wp();
-WP* return_();
-void free_wp(WP *wp);
-void check_wp();
-word_t expr(char *e, bool *success);
+
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -45,7 +41,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-  check_wp();
+  IFDEF(CONFIG_WATCHPOINT, eval_watchpoints());
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {

@@ -25,11 +25,6 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
-void print_wp();
-void free_wp(int des);
-WP* new_wp(char *expr);
-word_t vaddr_read(vaddr_t addr, int len);
-word_t expr(char *e, bool *success);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -73,15 +68,28 @@ static int cmd_si(char *args) {
   return 0;
 }
 
-static int cmd_info(char *args) {
-  if(args == NULL) 
+int cmd_info(char *args) {
+  char *arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    puts("No argument given");
     return 0;
-  if(strcmp(args,"r") == 0) 
+  }
+  if (strcmp(arg, "r") == 0) {
     isa_reg_display();
-  else if(strcmp(args,"w") == 0) 
-    print_wp();
-  else 
-    printf("Invalid command!\n");
+  }
+#ifdef CONFIG_WATCHPOINT
+  else if (strcmp(arg, "w") == 0) {
+    char *arg2 = strtok(NULL, " ");
+    if (arg2 == NULL) {
+      watchpoint_print_all();
+    } else {
+      watchpoint_print_at(atoi(arg2));
+    }
+  }
+#endif
+  else {
+    printf("Unknown argument \"%s\"\n", arg);
+  }
   return 0;
 }
 
@@ -154,19 +162,26 @@ static int cmd_p(char *args) {
   return 0;
 }
 
-static int cmd_w(char *args){
-  if(args == NULL) 
+#ifdef CONFIG_WATCHPOINT
+static int cmd_w(char *args) {
+  if (args == NULL) {
+    puts("One argument required");
     return 0;
-  if(new_wp(args)==NULL) 
-    printf("the watch_point_pool is full!\n");
+  }
+  watchpoint_add(args);
   return 0;
 }
 
-static int cmd_d(char *args){
-  if(args == NULL) return 0;
-  free_wp(atoi(args));
+static int cmd_d(char *args) {
+  if (args == NULL) {
+    puts("One argument required");
+    return 0;
+  }
+  int no = atoi(args);
+  watchpoint_delete(no);
   return 0;
 }
+#endif
 
 static int cmd_help(char *args);
 
@@ -182,8 +197,10 @@ static struct {
   { "info", "Printing program information", cmd_info},
   { "x", "Scan Memory ", cmd_x},
   { "p", "Expression evaluation", cmd_p },
+#ifdef CONFIG_WATCHPOINT
   { "w", "Set up monitoring points", cmd_w},
   { "d", "Deleting a Watchpoint", cmd_d },
+#endif
 
 
   /* TODO: Add more commands */
@@ -262,5 +279,5 @@ void init_sdb() {
   init_regex();
 
   /* Initialize the watchpoint pool. */
-  init_wp_pool();
+  IFDEF(CONFIG_WATCHPOINT, init_wp_pool());
 }
