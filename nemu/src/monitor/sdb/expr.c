@@ -231,6 +231,7 @@ bool check_parentheses(int p, int q) {
 }
 
 int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运算中途递归调用时因为有负值存在而导致与c直接计算的答案不符
+  printf("p= %u, q= %u \n", p, q);
   if (p > q) {
     printf("Bad expression\n");
     assert(0);
