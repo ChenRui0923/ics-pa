@@ -261,13 +261,17 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
   else {
     int op = find_main_operator(p, q);
 
-    // Apply unary minus before evaluating binary operations
-    while (op > p && tokens[op - 1].type == TK_UNARY_MINUS) {
-      int val = eval(p, op - 2);
-      // Apply unary minus to the evaluated value
-      val = -val;
-      p = op - 1; // Update start position for next evaluation
-      op = find_main_operator(p, q);
+    // // Apply unary minus before evaluating binary operations
+    // while (op > p && tokens[op - 1].type == TK_UNARY_MINUS) {
+    //   int val = eval(p, op - 2);
+    //   // Apply unary minus to the evaluated value
+    //   val = -val;
+    //   p = op - 1; // Update start position for next evaluation
+    //   op = find_main_operator(p, q);
+    // }
+    if (tokens[op].type == TK_UNARY_MINUS) {
+      int val = eval(op + 1, q);
+      return -val;
     }
 
     int val1 = eval(p, op - 1);
