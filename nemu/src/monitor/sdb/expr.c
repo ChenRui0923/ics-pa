@@ -247,9 +247,12 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
           val = -val;
       }
       return val;
+    } else if( tokens[p].type == TK_UNARY_MINUS && tokens[p + 1].type == TK_DNUM) {
+      int val = atoi(tokens[p + 1].str);
+      return -val;
     } else {
       printf("Unexpected token type\n");
-      assert(0);
+      // assert(0);
     }
   }
   else if (check_parentheses(p, q) == true) {
