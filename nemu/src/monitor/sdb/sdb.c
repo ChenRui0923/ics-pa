@@ -19,11 +19,17 @@
 #include <readline/history.h>
 #include "sdb.h"
 #include "memory/vaddr.h"
+#include "watchpoint.h"
 
 static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+void print_wp();
+void free_wp(int des);
+WP* new_wp(char *expr);
+word_t vaddr_read(vaddr_t addr, int len);
+word_t expr(char *e, bool *success);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -68,17 +74,14 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-   if (args != NULL) {
-    if (strcmp(args, "r") == 0) {
-      isa_reg_display();
-    } else if (strcmp(args, "w" )== 0) {
-      printf("w---this is a test for print monitoring points \n");
-    } else {
-      printf("Invalid argument for info: %s\n", args);
-    }
-  } else {
-    printf("Please input your arugument for info \n");
-  }
+  if(args == NULL) 
+    return 0;
+  if(strcmp(args,"r") == 0) 
+    isa_reg_display();
+  else if(strcmp(args,"w") == 0) 
+    print_wp();
+  else 
+    printf("Invalid command!\n");
   return 0;
 }
 
@@ -144,18 +147,24 @@ static int cmd_p(char *args) {
   bool flag = true;
   word_t result = expr(args, &flag);
   if (flag) {
-    printf("%u\n", (uint32_t)result);
+    printf(">  %u\n", (uint32_t)result);
   } else {
     printf("Failed to evaluate expression: %s\n", args);
   }
   return 0;
 }
 
-static int cmd_w(char *args) {
+static int cmd_w(char *args){
+  if(args == NULL) 
+    return 0;
+  if(new_wp(args)==NULL) 
+    printf("the watch_point_pool is full!\n");
   return 0;
 }
 
-static int cmd_d(char *args) {
+static int cmd_d(char *args){
+  if(args == NULL) return 0;
+  free_wp(atoi(args));
   return 0;
 }
 
