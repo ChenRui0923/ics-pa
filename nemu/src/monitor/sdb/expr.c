@@ -264,7 +264,7 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
     // Apply unary minus before evaluating binary operations
     while (op > p && tokens[op + 1].type == TK_UNARY_MINUS) {
       int val1 = eval(p, op - 1);
-      int val2 = -eval(op + 1, q);
+      int val2 = -eval(op + 2, q);
       switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
