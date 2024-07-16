@@ -262,33 +262,22 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
   else {
     int op = find_main_operator(p, q);
 
-    // Apply unary minus before evaluating binary operations
-    if (op > p && tokens[op + 1].type == TK_UNARY_MINUS) {
-      int val1 = eval(p, op - 1);
-      int val2 = eval(op + 2, q);
+    int val1 = 0;
+    if (tokens[op].type == TK_UNARY_MINUS) {
+      val1 = eval(op + 1, q);
+      return -val1;
+    } else {
+      val1 = eval(p, op - 1);
+      int val2 = eval(op + 1, q);
       switch (tokens[op].type) {
-      case '+': return val1 + val2;
-      case '-': return val1 - val2;
-      case '*': return val1 * val2;
-      case '/': return val1 / val2;
-      default: 
-        printf("Unexpected operator\n");
-        assert(0);
+        case '+': return val1 + val2;
+        case '-': return val1 - val2;
+        case '*': return val1 * val2;
+        case '/': return val1 / val2;
+        default:
+          printf("Unexpected operator\n");
+          assert(0);
       }
-      return 0;
-    }
-
-
-    int val1 = eval(p, op - 1);
-    int val2 = eval(op + 1, q);
-    switch (tokens[op].type) {
-      case '+': return val1 + val2;
-      case '-': return val1 - val2;
-      case '*': return val1 * val2;
-      case '/': return val1 / val2;
-      default: 
-        printf("Unexpected operator\n");
-        assert(0);
     }
   }  
   return 0;
