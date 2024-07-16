@@ -53,26 +53,38 @@ WP* search_(WP *wp){
   }
   return temp;
 }
-WP* new_wp(char *expr){
-  if(head==NULL){
-    head=free_;
-    free_=free_->next;
-    head->next=NULL;
-    strcpy(head->exp,expr);
-    curr=head;
+WP* new_wp(char *expr_) {
+  if (free_ == NULL) {
+    printf("No free watchpoint available!\n");
+    return NULL;
   }
-  else{
-    if(free_==NULL) 
-      return NULL;
-    else{
-      curr->next=free_;
-      free_=free_->next;
-      curr=curr->next;
-      curr->next=NULL;
-      strcpy(curr->exp,expr);
-    }
+  
+  // 从free_链表中取出一个新的watchpoint
+  WP* new_wp = free_;
+  free_ = free_->next;
+
+  // 初始化新的watchpoint
+  new_wp->next = NULL;
+  strcpy(new_wp->exp, expr_);
+  bool success;
+  new_wp->last = expr(new_wp->exp, &success);
+
+  if (!success) {
+    printf("The expression is invalid!\n");
+    new_wp->next = free_;
+    free_ = new_wp;
+    return NULL;
   }
-  return curr;
+
+  // 将新的watchpoint加入到head链表中
+  if (head == NULL) {
+    head = new_wp;
+  } else {
+    curr->next = new_wp;
+  }
+  curr = new_wp;
+
+  return new_wp;
 }
 void free_wp(int des){
   WP *wp=head;
