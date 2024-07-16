@@ -265,6 +265,7 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
     while (op > p && tokens[op + 1].type == TK_UNARY_MINUS) {
       int val1 = eval(p, op - 1);
       int val2 = eval(op + 2, q);
+      printf("val2=%d\n", val2);
       switch (tokens[op].type) {
       case '+': return val1 + (-val2);
       case '-': return val1 - (-val2);
