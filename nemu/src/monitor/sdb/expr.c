@@ -31,7 +31,6 @@ enum {
   TK_NEQ,
   TK_HEXNUM,
   TK_DOLLAR,
-  TK_MINUS,  // ‘-’ 作为减法
   TK_UNARY_MINUS, // ‘-’ 作为取反 
   DEREF,
   /* TODO: Add more token types */
@@ -179,7 +178,7 @@ static bool make_token(char *e) {
 int get_priority(int type) {
   switch (type) {
     case '+':
-    case TK_MINUS:
+    case '-':
       return 1; // 加法和减法的优先级为1
     case '*':
     case '/':
@@ -275,7 +274,7 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
     int val2 = eval(op + 1, q);
     switch (tokens[op].type) {
       case '+': return val1 + val2;
-      case TK_MINUS : return val1 - val2;
+      case '-': return val1 - val2;
       case '*': return val1 * val2;
       case '/': return val1 / val2;
       default: 
@@ -297,14 +296,12 @@ word_t expr(char *e, bool *success) {
   /* TODO: Insert codes to evaluate the expression. */
 
   for (int i = 0; i < nr_token; i ++) {
-    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '-') ) {   //这里type先乱写的
+    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '(' || tokens[i - 1].type == TK_EQ )) {   //这里type先乱写的
       tokens[i].type = DEREF;
     } 
     else if(tokens[i].type == '-') {
-      if (i == 0 || ( i > 0 && (tokens[i - 1].type == '(' || tokens[i - 1].type == '-' || tokens[i - 1].type == '+' ) ) ) {
+      if (i == 0 || tokens[i - 1].type == '(' || tokens[i - 1].type == '-' || tokens[i - 1].type == '+' ) {
         tokens[i].type = TK_UNARY_MINUS;
-      } else if((i > 0 && tokens[i - 1].type == TK_DNUM)) {
-        tokens[i].type = TK_MINUS;
       }
     }
   }
