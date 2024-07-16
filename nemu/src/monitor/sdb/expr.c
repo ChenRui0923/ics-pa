@@ -103,8 +103,8 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex,
-            position, substr_len, substr_len, substr_start);
+        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex,
+        //     position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
@@ -266,17 +266,17 @@ static word_t eval(int p, int q, bool *success) {
   word_t val_1, val_2;
   word_t val, addr;
   if (p > q) {
-    Log("(%d,%d): %s", p, q, "bad expression");
+    // Log("(%d,%d): %s", p, q, "bad expression");
     printf("Bad expression at token #%d\n", q);
     *success = false;
     return 0;
   } else if (p == q) {
     switch (tokens[p].type) {
       case TK_NUM:
-        Log("(%d,%d): single number token", p, q);
+        // Log("(%d,%d): single number token", p, q);
         return (word_t)strtoll(tokens[p].str, NULL, 0);
       case TK_REG: {
-        Log("(%d,%d): single register token", p, q);
+        // Log("(%d,%d): single register token", p, q);
         bool reg_succ = false;
         /* Remove prefix "$" */
         word_t val = isa_reg_str2val(tokens[p].str + 1, &reg_succ);
@@ -294,18 +294,18 @@ static word_t eval(int p, int q, bool *success) {
 
   switch (check_parentheses(p, q)) {
     case PAREN_WRAPPED:
-      Log("(%d,%d): parentheses reduction", p, q);
+      // Log("(%d,%d): parentheses reduction", p, q);
       return eval(p + 1, q - 1, success);
     case PAREN_UNMATCHED:
-      Log("(%d,%d): ill-formed parentheses", p, q);
+      // Log("(%d,%d): ill-formed parentheses", p, q);
       printf("Ill-formed parentheses at tokens #%d-#%d\n", p, q);
       *success = false;
       return 0;
     case PAREN_NONE: {
-      Log("(%d,%d): expression eval", p, q);
+      // Log("(%d,%d): expression eval", p, q);
       int i_op = find_main_op(p, q);
       if (i_op == -1) {
-        Log("(%d,%d): no main op found; check for unary op", p, q);
+        // Log("(%d,%d): no main op found; check for unary op", p, q);
         switch (tokens[p].type) {
           case TK_NEG:
             val = eval(p + 1, q, success);
@@ -314,14 +314,14 @@ static word_t eval(int p, int q, bool *success) {
             addr = eval(p + 1, q, success);
             return *success ? vaddr_read((vaddr_t)addr, 4) : 0;
           default:
-            Log("(%d,%d): not even a unary op at token #%d (%s); reporting", p, q, p,
-                tokens[p].str);
+            // Log("(%d,%d): not even a unary op at token #%d (%s); reporting", p, q, p,
+            //     tokens[p].str);
             printf("Bad expression at token #%d\n", p);
             *success = false;
             return 0;
         }
       }
-      Log("(%d,%d): main op (%s) at token #%d", p, q, tokens[i_op].str, i_op);
+      // Log("(%d,%d): main op (%s) at token #%d", p, q, tokens[i_op].str, i_op);
       val_1 = eval(p, i_op - 1, success);
       val_2 = eval(i_op + 1, q, success);
       switch (tokens[i_op].type) {
