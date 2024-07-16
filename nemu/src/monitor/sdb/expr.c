@@ -26,7 +26,6 @@ enum {
   TK_NOTYPE = 256,
   TK_EQ,
   TK_DNUM, 
-  TK_UEQ,
   TK_AND,
   TK_NEQ,
   TK_HEXNUM,
@@ -232,7 +231,6 @@ bool check_parentheses(int p, int q) {
 int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运算中途递归调用时因为有负值存在而导致与c直接计算的答案不符
   printf("p= %u, q= %u \n", p, q);
   if (p > q) {
-    return 0;
     printf("Bad expression\n");
     assert(0);
   }
@@ -266,7 +264,7 @@ int eval(word_t p, word_t q) {   // eval的类型修改为int是为了避免运�
     int op = find_main_operator(p, q);
 
     // Apply unary minus before evaluating binary operations
-    while (op > p && tokens[op + 1].type == TK_UNARY_MINUS) {
+    if (op > p && tokens[op + 1].type == TK_UNARY_MINUS) {
       int val1 = eval(p, op - 1);
       int val2 = eval(op + 2, q);
       switch (tokens[op].type) {
