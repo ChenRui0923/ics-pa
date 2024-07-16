@@ -23,6 +23,7 @@ WP* new_wp();
 WP* return_();
 void free_wp(WP *wp);
 void check_wp();
+word_t expr(char *e, bool *success);
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
