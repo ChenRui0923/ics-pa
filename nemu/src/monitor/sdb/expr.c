@@ -59,7 +59,7 @@ static struct rule {
     {"0x[0-9]+", TK_NUM},     // hex number
     {"[0-9]+", TK_NUM},       // dec number
     {"\\$[a-z0-9]+", TK_REG}, // register
-    {"\\$\\$+", TK_REG}, // register
+    {"\\$\\$0+", TK_REG}, // register
 };
 
 #define NR_REGEX ARRLEN(rules)
